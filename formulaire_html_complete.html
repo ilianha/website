@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire de Contact</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+</head>
+<body class="form-page">
+    <div class="form-container">
+        <div class="form-header">
+            <div class="back-button">
+                <a href="index.html" class="back-link">← Retour</a>
+            </div>
+            <h1>📋 Coordonnées</h1>
+            <p>Veuillez remplir vos informations</p>
+        </div>
+        
+        <div class="porte-info">
+            <div class="porte-number" id="porteNumber">----</div>
+            <div class="porte-label">Numéro de porte</div>
+        </div>
+        
+        <form id="contactForm">
+            <div class="form-group">
+                <label for="prenom">Prénom *</label>
+                <input type="text" id="prenom" name="prenom" required placeholder="Entrez votre prénom">
+                <div class="error-message" id="prenomError"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="nom">Nom *</label>
+                <input type="text" id="nom" name="nom" required placeholder="Entrez votre nom">
+                <div class="error-message" id="nomError"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="telephone">Numéro de téléphone *</label>
+                <div class="phone-input">
+                    <select class="country-select" id="countryCode">
+                        <option value="+33">🇫🇷 +33</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+44">🇬🇧 +44</option>
+                        <option value="+49">🇩🇪 +49</option>
+                        <option value="+39">🇮🇹 +39</option>
+                        <option value="+34">🇪🇸 +34</option>
+                        <option value="+41">🇨🇭 +41</option>
+                        <option value="+32">🇧🇪 +32</option>
+                    </select>
+                    <input type="tel" id="telephone" name="telephone" class="phone-number" required placeholder="06 12 34 56 78">
+                </div>
+                <div class="error-message" id="telephoneError"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="entreprise">Entreprise *</label>
+                <input type="text" id="entreprise" name="entreprise" required placeholder="Nom de votre entreprise">
+                <div class="error-message" id="entrepriseError"></div>
+            </div>
+            
+            <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="consent" required>
+                    <span class="checkmark"></span>
+                    J'accepte que mes données soient traitées pour la gestion des accès *
+                </label>
+                <div class="error-message" id="consentError"></div>
+            </div>
+            
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <span class="btn-text">Envoyer</span>
+                <span class="btn-loader" style="display: none;">
+                    <div class="spinner"></div>
+                </span>
+            </button>
+            
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">✅</div>
+                <h3>Formulaire envoyé avec succès !</h3>
+                <p>Votre demande d'accès a été transmise.</p>
+            </div>
+            
+            <div class="error-message global-error" id="globalError" style="display: none;">
+                <div class="error-icon">❌</div>
+                <p>Une erreur est survenue. Veuillez réessayer.</p>
+            </div>
+        </form>
+    </div>
+    
+    <div class="background-animation">
+        <div class="floating-shape shape1"></div>
+        <div class="floating-shape shape2"></div>
+        <div class="floating-shape shape3"></div>
+    </div>
+    
+    <script>
+        // Configuration - REMPLACEZ PAR VOTRE WEBHOOK N8N
+        const WEBHOOK_URL = 'https://votre-n8n.com/webhook/formulaire-acces';
+        
+        // Récupérer le numéro de porte depuis l'URL
+        function getPorteNumber() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const porteParam = urlParams.get('porte');
+            
+            if (porteParam) {
+                document.getElementById('porteNumber').textContent = porteParam;
+                return porteParam;
+            }
+            
+            // Si pas de paramètre, rediriger vers l'accueil
+            window.location.href = 'index.html';
+            return null;
+        }
+
+        // Validation des champs
+        function validateField(fieldId, errorId, validator, errorMessage) {
+            const field = document.getElementById(fieldId);
+            const errorDiv = document.getElementById(errorId);
+            
+            if (!validator(field.value.trim())) {
+                errorDiv.textContent = errorMessage;
+                field.classList.add('error');
+                return false;
+            } else {
+                errorDiv.textContent = '';
+                field.classList.remove('error');
+                return true;
+            }
+        }
+
+        // Validators
+        const validators = {
+            name: (value) => value.length >= 2 && /^[a-zA-ZÀ-ÿ\s-']+$/.test(value),
+            phone: (value) => /^[0-9\s.-]{8,15}$/.test(value.replace(/\s/g, '')),
+            company: (value) => value.length >= 2
+        };
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            const numeroPorte = getPorteNumber();
+            
+            if (!numeroPorte) return;
+
+            // Animation d'entrée
+            document.querySelector('.form-container').style.opacity = '0';
+            document.querySelector('.form-container').style.transform = 'translateY(30px)';
+            
+            setTimeout(() => {
+                document.querySelector('.form-container').style.transition = 'all 0.6s ease';
+                document.querySelector('.form-container').style.opacity = '1';
+                document.querySelector('.form-container').style.transform = 'translateY(0)';
+            }, 100);
+
+            // Validation en temps réel
+            document.getElementById('prenom').addEventListener('blur', () => {
+                validateField('prenom', 'prenomError', validators.name, 'Prénom invalide (min 2 caractères, lettres uniquement)');
+            });
+
+            document.getElementById('nom').addEventListener('blur', () => {
+                validateField('nom', 'nomError', validators.name, 'Nom invalide (min 2 caractères, lettres uniquement)');
+            });
+
+            document.getElementById('telephone').addEventListener('blur', () => {
+                validateField('telephone', 'telephoneError', validators.phone, 'Numéro de téléphone invalide');
+            });
+
+            document.getElementById('entreprise').addEventListener('blur', () => {
+                validateField('entreprise', 'entrepriseError', validators.company, 'Nom d\'entreprise invalide (min 2 caractères)');
+            });
+
+            // Gestion du formulaire
+            document.getElementById('contactForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Reset des erreurs
+                document.getElementById('globalError').style.display = 'none';
+                
+                // Validation complète
+                const isPrenomValid = validateField('prenom', 'prenomError', validators.name, 'Prénom invalide');
+                const isNomValid = validateField('nom', 'nomError', validators.name, 'Nom invalide');
+                const isTelValid = validateField('telephone', 'telephoneError', validators.phone, 'Téléphone invalide');
+                const isEntrepriseValid = validateField('entreprise', 'entrepriseError', validators.company, 'Entreprise invalide');
+                
+                const consent = document.getElementById('consent');
+                const consentError = document.getElementById('consentError');
+                if (!consent.checked) {
+                    consentError.textContent = 'Vous devez accepter le traitement des données';
+                    return;
+                } else {
+                    consentError.textContent = '';
+                }
+                
+                if (!isPrenomValid || !isNomValid || !isTelValid || !isEntrepriseValid) {
+                    return;
+                }
+                
+                // Animation de chargement
+                const submitBtn = document.getElementById('submitBtn');
+                const btnText = submitBtn.querySelector('.btn-text');
+                const btnLoader = submitBtn.querySelector('.btn-loader');
+                
+                btnText.style.display = 'none';
+                btnLoader.style.display = 'inline-block';
+                submitBtn.disabled = true;
+                
+                // Collecter les données
+                const formData = {
+                    prenom: document.getElementById('prenom').value.trim(),
+                    nom: document.getElementById('nom').value.trim(),
+                    telephone: document.getElementById('countryCode').value + ' ' + document.getElementById('telephone').value.trim(),
+                    entreprise: document.getElementById('entreprise').value.trim(),
+                    numeroPorte: numeroPorte,
+                    submittedAt: new Date().toISOString(),
+                    userAgent: navigator.userAgent,
+                    ip: 'client-side' // L'IP sera récupérée côté serveur
+                };
+                
+                try {
+                    console.log('Envoi des données:', formData);
+                    
+                    // Envoi vers n8n
+                    const response = await fetch(WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    if (response.ok) {
+                        // Succès
+                        document.getElementById('successMessage').style.display = 'block';
+                        document.getElementById('contactForm').style.display = 'none';
+                        
+                        // Redirection après 3 secondes
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 3000);
+                        
+                    } else {
+                        throw new Error('Erreur serveur: ' + response.status);
+                    }
+                    
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    document.getElementById('globalError').style.display = 'block';
+                    
+                    // Reset du bouton
+                    btnText.style.display = 'inline-block';
+                    btnLoader.style.display = 'none';
+                    submitBtn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
