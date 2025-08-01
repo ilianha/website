@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordonnées</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .form-container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-header h1 {
+            color: #2d3748;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .form-header p {
+            color: #718096;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        input[type="text"], 
+        input[type="tel"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+        
+        input[type="text"]:focus, 
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .phone-input {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .country-select {
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: #f8fafc;
+            font-size: 16px;
+            min-width: 80px;
+        }
+        
+        .phone-number {
+            flex: 1;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .success-message {
+            display: none;
+            background: #48bb78;
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+        
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .porte-info {
+            background: #edf2f7;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .porte-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .porte-label {
+            color: #718096;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .form-container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+            
+            .form-header h1 {
+                font-size: 24px;
+            }
+            
+            .phone-input {
+                flex-direction: column;
+            }
+            
+            .country-select {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <h1>📋 Coordonnées</h1>
+            <p>Veuillez remplir vos informations</p>
+        </div>
+        
+        <div class="porte-info">
+            <div class="porte-number" id="porteNumber">7895</div>
+            <div class="porte-label">Numéro de porte</div>
+        </div>
+        
+        <form id="contactForm">
+            <div class="form-group">
+                <label for="prenom">Prénom</label>
+                <input type="text" id="prenom" name="prenom" required placeholder="Entrez votre prénom">
+            </div>
+            
+            <div class="form-group">
+                <label for="nom">Nom</label>
+                <input type="text" id="nom" name="nom" required placeholder="Entrez votre nom">
+            </div>
+            
+            <div class="form-group">
+                <label for="telephone">Numéro de téléphone</label>
+                <div class="phone-input">
+                    <select class="country-select" id="countryCode">
+                        <option value="+33">🇫🇷 +33</option>
+                        <option value="+1">🇺🇸 +1</option>
+                        <option value="+44">🇬🇧 +44</option>
+                        <option value="+49">🇩🇪 +49</option>
+                        <option value="+39">🇮🇹 +39</option>
+                        <option value="+34">🇪🇸 +34</option>
+                    </select>
+                    <input type="tel" id="telephone" name="telephone" class="phone-number" required placeholder="06 12 34 56 78">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="entreprise">Entreprise</label>
+                <input type="text" id="entreprise" name="entreprise" required placeholder="Nom de votre entreprise">
+            </div>
+            
+            <button type="submit" class="submit-btn">
+                Envoyer
+            </button>
+            
+            <div class="success-message" id="successMessage">
+                ✅ Formulaire envoyé avec succès !
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Récupérer le numéro de porte depuis l'URL
+        function getPorteNumber() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const porteParam = urlParams.get('porte');
+            if (porteParam) {
+                document.getElementById('porteNumber').textContent = porteParam;
+                return porteParam;
+            }
+            return '7895'; // valeur par défaut
+        }
+
+        // Initialiser le numéro de porte
+        const numeroPorte = getPorteNumber();
+
+        // Gestion du formulaire
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.querySelector('.submit-btn');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Animation de chargement
+            submitBtn.textContent = 'Envoi en cours...';
+            submitBtn.classList.add('loading');
+            
+            // Collecter les données
+            const formData = {
+                prenom: document.getElementById('prenom').value,
+                nom: document.getElementById('nom').value,
+                telephone: document.getElementById('countryCode').value + ' ' + document.getElementById('telephone').value,
+                entreprise: document.getElementById('entreprise').value,
+                numeroPorte: numeroPorte,
+                submittedAt: new Date().toISOString()
+            };
+            
+            // Simuler l'envoi (remplacez par votre webhook n8n)
+            console.log('Données à envoyer:', formData);
+            
+            // Remplacez cette URL par votre webhook n8n
+            fetch('VOTRE_WEBHOOK_N8N_URL', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Succès
+                successMessage.style.display = 'block';
+                submitBtn.textContent = 'Envoyé !';
+                setTimeout(() => {
+                    document.getElementById('contactForm').reset();
+                    submitBtn.textContent = 'Envoyer';
+                    submitBtn.classList.remove('loading');
+                    successMessage.style.display = 'none';
+                }, 3000);
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                alert('Erreur lors de l\'envoi. Veuillez réessayer.');
+                submitBtn.textContent = 'Envoyer';
+                submitBtn.classList.remove('loading');
+            });
+        });
+
+        // Animation d'entrée
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('.form-container').style.opacity = '0';
+            document.querySelector('.form-container').style.transform = 'translateY(30px)';
+            
+            setTimeout(() => {
+                document.querySelector('.form-container').style.transition = 'all 0.6s ease';
+                document.querySelector('.form-container').style.opacity = '1';
+                document.querySelector('.form-container').style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>
